@@ -1,21 +1,34 @@
-import { ButtonGroup, Button } from '@mui/material';
+import { ButtonGroup, Button, Box } from '@mui/material';
 import { useEditor } from '../hooks/editor';
 import { useRef } from 'react';
+
 
 const ToolBar = () =>{
     const inputRef = useRef(null);
     const { editor, onReady, isDrawing, setIsDrawing } = useEditor();
-
+    
+    //delete selected Items
+    const onDeleteSelected = () => {
+        const activeObjects = editor?.canvas.getActiveObjects();
+        if (activeObjects && activeObjects.length > 0) {
+            activeObjects.forEach(obj => editor?.canvas.remove(obj)); // Remove each active object
+            editor?.canvas.discardActiveObject().renderAll(); // Deselect all objects and re-render canvas
+          }
+      };
+    //function to add Circle
     const onAddCircle = () => {
         editor?.addCircle()
-      }
-      const onAddRectangle = () => {
+    }
+    //function to add Rectangle
+    const onAddRectangle = () => {
         editor?.addRectangle()
-      }
-      const onAddLine = () =>{
+    }
+    //function to add Line
+    const onAddLine = () =>{
         editor?.addLine()
-      }
-      const onAddText = () =>{
+    }
+    //function to add Text
+    const onAddText = () =>{
         const text= new fabric.Textbox('Enter your text',{
           left:100,
           top: 100,
@@ -25,22 +38,41 @@ const ToolBar = () =>{
         })
         editor.canvas.add(text);
         editor.canvas.renderAll();
-      }
-      const toggleDrawingMode = () => {
+    }
+    //function to add Polygon
+    const onAddPolygon = () =>{
+        const polygon = new fabric.Polygon([
+            { x: 200, y: 10 },
+            { x: 250, y: 50 },
+            { x: 250, y: 100 },
+            { x: 150, y: 100 },
+            { x: 150, y: 50 },
+            
+          ], {
+            left: 150,
+            top: 200,
+            stroke: 'black',
+            strokeWidth: 2,
+          });
+            editor.canvas.add(polygon);
+           
+    }
+    //Toggle between Drawing on Canvas
+    const toggleDrawingMode = () => {
         setIsDrawing(!isDrawing);
         if (!isDrawing) {
           editor.canvas.isDrawingMode = true;
         } else {
           editor.canvas.isDrawingMode = false;
         }
-      };
-      const handleFileUpload = (event) => {
+    };
+    //Image Upload Function
+    const handleFileUpload = (event) => {
         const file = event.target.files[0];
         const reader = new FileReader();
         reader.onload = (event) => {
           const imageUrl = event.target.result;
           fabric.Image.fromURL(imageUrl, (img) => {
-            // Resize the image
             img.scaleToWidth(editor.canvas.width / 4);
             img.scaleToHeight(editor.canvas.height / 4);
             editor.canvas.add(img);
@@ -48,11 +80,11 @@ const ToolBar = () =>{
           });
         };
         reader.readAsDataURL(file);
-      };
+    };
 
       
     return (
-        <>
+        <Box sx={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
             <ButtonGroup size="large" orientation='vertical' aria-label="Large button group">
                 <Button onClick={onAddLine} variant="outlined">
                   Line
@@ -75,8 +107,10 @@ const ToolBar = () =>{
                 />
                 <Button onClick={() => inputRef.current.click()}>Upload Image</Button>
                 <Button onClick={toggleDrawingMode}>{isDrawing ? 'Exit Drawing Mode' : 'Enter Drawing Mode'}</Button>
+                <Button onClick={onAddPolygon}>Ploygon</Button>
+                {editor?.canvas.getActiveObject() && (<Button onClick={onDeleteSelected}>Delete Item</Button>)}
             </ButtonGroup>
-        </>
+        </Box>
     )
 }
 
