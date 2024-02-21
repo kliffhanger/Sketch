@@ -1,4 +1,6 @@
 # React + Vite
+A canva type clone with Fabric JS and Material UI 
+(First time usage)
 
 libraries used- Fabric Js, Material UI
 
