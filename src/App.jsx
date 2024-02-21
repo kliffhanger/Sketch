@@ -1,17 +1,15 @@
 import {Typography, AppBar, CssBaseline, Grid, Toolbar, Container, makeStyles, ButtonGroup, Button} from '@mui/material'
 import DrawIcon from '@mui/icons-material/Draw';
 import './App.css';
-import { useRef, useState } from 'react'
-import { FabricJSCanvas, useFabricJSEditor } from 'fabricjs-react'
-
+import { useRef} from 'react'
+import { FabricJSCanvas } from 'fabricjs-react'
+import { useEditor } from './hooks/editor';
 
 
 function App() {
 
   const inputRef = useRef(null);
-  const { editor, onReady } = useFabricJSEditor();
-  const [isDrawing, setIsDrawing] = useState(false);
-
+  const { editor, onReady, isDrawing, setIsDrawing } = useEditor();
 
   const onAddCircle = () => {
     editor?.addCircle()
